@@ -17,7 +17,7 @@ public class TripBooking {
 
     @ManyToOne
     @JoinColumn
-    private Driver driverEntity;
+    private Driver driver;
 
     @ManyToOne
     @JoinColumn
@@ -33,7 +33,7 @@ public class TripBooking {
         this.distanceInKm = distanceInKm;
         this.status = tripStatus;
         this.bill = bill;
-        this.driverEntity = driver;
+        this.driver = driver;
         this.customer = customer;
     }
 
@@ -95,12 +95,12 @@ public class TripBooking {
         this.status = status;
     }
 
-    public Driver getDriverEntity() {
-        return driverEntity;
+    public Driver getDriver() {
+        return driver;
     }
 
-    public void setDriverEntity(Driver driverEntity) {
-        this.driverEntity = driverEntity;
+    public void setDriver(Driver driver) {
+        this.driver = driver;
     }
 
     public Customer getCustomer() {

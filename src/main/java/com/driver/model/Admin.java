@@ -23,12 +23,12 @@ public class Admin {
         this.password = password;
     }
 
-    public int getId() {
+    public int getAdminId() {
         return adminId;
     }
 
-    public void setId(int id) {
-        this.adminId = id;
+    public void setAdminId(int adminId) {
+        this.adminId = adminId;
     }
 
     public String getUsername() {

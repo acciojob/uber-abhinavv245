@@ -77,13 +77,7 @@ public class TripBooking {
         this.distanceInKm = distanceInKm;
     }
 
-    public TripStatus getTripStatus() {
-        return status;
-    }
 
-    public void setTripStatus(TripStatus tripStatus) {
-        this.status = tripStatus;
-    }
 
     public int getBill() {
         return bill;
@@ -93,12 +87,20 @@ public class TripBooking {
         this.bill = bill;
     }
 
-    public Driver getDriver() {
+    public TripStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TripStatus status) {
+        this.status = status;
+    }
+
+    public Driver getDriverEntity() {
         return driverEntity;
     }
 
-    public void setDriver(Driver driver) {
-        this.driverEntity = driver;
+    public void setDriverEntity(Driver driverEntity) {
+        this.driverEntity = driverEntity;
     }
 
     public Customer getCustomer() {

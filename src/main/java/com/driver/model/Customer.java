@@ -26,12 +26,12 @@ public class Customer{
         this.tripBookingList = tripBookingList;
     }
 
-    public int getId() {
+    public int getCustomerId() {
         return customerId;
     }
 
-    public void setId(int id) {
-        this.customerId = id;
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
 
     public String getMobile() {

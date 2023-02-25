@@ -36,7 +36,7 @@ public class Cab {
     }
 
     public void setId(int id) {
-        this.Id = id;
+        Id = id;
     }
 
     public int getPerKmRate() {

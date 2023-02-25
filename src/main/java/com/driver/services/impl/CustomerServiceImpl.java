@@ -61,12 +61,12 @@ public class CustomerServiceImpl implements CustomerService {
 		for(Driver driver:driverList){
 			if(driver.getCab().isAvailable()){
 				tripDriver=driver;
-				bookedTrip.setDriver(tripDriver);
+				bookedTrip.setDriverEntity(tripDriver);
 				break;
 			}
 		}
 		if(tripDriver==null) throw new Exception("No cab available!");
-		bookedTrip.setTripStatus(TripStatus.CONFIRMED);
+		bookedTrip.setStatus(TripStatus.CONFIRMED);
         tripDriver.getCab().setAvailable(false);
 		//add the trip the customer's trip list
 		customer.getTripBookingList().add(bookedTrip);
@@ -81,10 +81,10 @@ public class CustomerServiceImpl implements CustomerService {
 		TripBooking tripBooking= tripBookingRepository2.findById(tripId).get();
 
 		//get the driver and make his cab free
-		tripBooking.getDriver().getCab().setAvailable(true);
+		tripBooking.getDriverEntity().getCab().setAvailable(true);
 
 		//change the trip status to cancel
-		tripBooking.setTripStatus(TripStatus.CANCELED);
+		tripBooking.setStatus(TripStatus.CANCELED);
 		Customer customer=tripBooking.getCustomer();
 		//update the parent
 		customerRepository2.save(customer);
@@ -96,7 +96,7 @@ public class CustomerServiceImpl implements CustomerService {
 		//Complete the trip having given trip Id and update TripBooking attributes accordingly
 		TripBooking tripBooking= tripBookingRepository2.findById(tripId).get();
         //get the driver and cab rate , then calculate the bill
-		Driver driver=tripBooking.getDriver();
+		Driver driver=tripBooking.getDriverEntity();
 		int rate=driver.getCab().getPerKmRate();
 		int bill=tripBooking.getDistanceInKm()*rate;
 		//set the bill
@@ -105,7 +105,7 @@ public class CustomerServiceImpl implements CustomerService {
 		driver.getCab().setAvailable(true);
 
 		//change the trip status to complete
-		tripBooking.setTripStatus(TripStatus.COMPLETED);
+		tripBooking.setStatus(TripStatus.COMPLETED);
 
 		Customer customer=tripBooking.getCustomer();
 

@@ -38,6 +38,15 @@ public class CustomerServiceImpl implements CustomerService {
 	public void deleteCustomer(Integer customerId) {
 		// Delete customer without using deleteById function
 		Customer customer=customerRepository2.findById(customerId).get();
+
+		List<TripBooking> listOfTrips=customer.getTripBookingList();
+		for(TripBooking trip:listOfTrips){
+			if(trip.getStatus()==TripStatus.CONFIRMED){
+				Driver driver=trip.getDriver();
+				driver.getCab().setAvailable(true);
+				driverRepository2.save(driver);
+			}
+		}
 		customerRepository2.delete(customer);
 	}
 
@@ -45,10 +54,6 @@ public class CustomerServiceImpl implements CustomerService {
 	public TripBooking bookTrip(int customerId, String fromLocation, String toLocation, int distanceInKm) throws Exception{
 		//Book the driver with lowest driverId who is free (cab available variable is Boolean.TRUE). If no driver is available, throw "No cab available!" exception
 		//Avoid using SQL query
-		Customer customer=customerRepository2.findById(customerId).get();
-
-		//set the basic attributes for the trip
-		TripBooking bookedTrip= new TripBooking(fromLocation,toLocation,distanceInKm,customer,0);
 		//find the driver available
 		List<Driver> driverList=driverRepository2.findAll();
 		Collections.sort(driverList, new Comparator<Driver>() {
@@ -61,17 +66,25 @@ public class CustomerServiceImpl implements CustomerService {
 		for(Driver driver:driverList){
 			if(driver.getCab().getAvailable()){
 				tripDriver=driver;
-				bookedTrip.setDriver(tripDriver);
 				break;
 			}
 		}
 		if(tripDriver==null) throw new Exception("No cab available!");
+		//get the customer
+		Customer customer=customerRepository2.findById(customerId).get();
+
+		//set the basic attributes for the trip
+		TripBooking bookedTrip= new TripBooking(fromLocation,toLocation,distanceInKm,customer,0);
 		bookedTrip.setStatus(TripStatus.CONFIRMED);
+		bookedTrip.setDriver(tripDriver);
+		bookedTrip.setBill(distanceInKm*tripDriver.getCab().getPerKmRate());
         tripDriver.getCab().setAvailable(false);
 		//add the trip the customer's trip list
 		customer.getTripBookingList().add(bookedTrip);
-		//save the customer-trip booking will be automatically saved via bidrectional mapping
+
 		customerRepository2.save(customer);
+		tripBookingRepository2.save(bookedTrip);
+
 		return bookedTrip;
 	}
 
@@ -82,35 +95,23 @@ public class CustomerServiceImpl implements CustomerService {
 
 		//get the driver and make his cab free
 		tripBooking.getDriver().getCab().setAvailable(true);
-
+		//set the bill to zero
+        tripBooking.setBill(0);
 		//change the trip status to cancel
 		tripBooking.setStatus(TripStatus.CANCELED);
-		Customer customer=tripBooking.getCustomer();
-		//update the parent
-		customerRepository2.save(customer);
-
+		tripBookingRepository2.save(tripBooking);
 	}
 
 	@Override
 	public void completeTrip(Integer tripId){
 		//Complete the trip having given trip Id and update TripBooking attributes accordingly
 		TripBooking tripBooking= tripBookingRepository2.findById(tripId).get();
-        //get the driver and cab rate , then calculate the bill
+        //get the driver
 		Driver driver=tripBooking.getDriver();
-		int rate=driver.getCab().getPerKmRate();
-		int bill=tripBooking.getDistanceInKm()*rate;
-		//set the bill
-		tripBooking.setBill(bill);
-		//get the driver and make his cab free
+		//make his cab free
 		driver.getCab().setAvailable(true);
-
 		//change the trip status to complete
 		tripBooking.setStatus(TripStatus.COMPLETED);
-
-		Customer customer=tripBooking.getCustomer();
-
-		//save the customer, trip details will be automatically updated
-		customerRepository2.save(customer);
-
+		tripBookingRepository2.save(tripBooking);
 	}
 }

@@ -81,9 +81,13 @@ public class CustomerServiceImpl implements CustomerService {
         tripDriver.getCab().setAvailable(false);
 		//add the trip the customer's trip list
 		customer.getTripBookingList().add(bookedTrip);
-
+		//add the trip to drivers list
+		tripDriver.getTripBookingList().add(bookedTrip);
+       //saving the driver as cab set available was changed
+		driverRepository2.save(tripDriver);
+		//saving the parent customer and child tripbooking will be automatically updated
 		customerRepository2.save(customer);
-		tripBookingRepository2.save(bookedTrip);
+
 
 		return bookedTrip;
 	}
